@@ -1,0 +1,177 @@
+"use client"
+
+import { useState, useMemo } from "react"
+import {
+  DIMENSIONS,
+  calcResults,
+  isDimComplete,
+  type Answer,
+  type AnswerValue,
+  TOTAL_QUESTIONS,
+} from "@/lib/readiness/model"
+import styles from "./readiness.module.css"
+import IntroScreen from "./IntroScreen"
+import DimensionScreen from "./DimensionScreen"
+import PartialResults from "./PartialResults"
+import ResultsRecord from "./ResultsRecord"
+import LeadCapture from "./LeadCapture"
+
+type Screen = "intro" | number | "partial" | "results"
+
+interface Props {
+  fontClassNames: string
+}
+
+export default function AssessmentClient({ fontClassNames }: Props) {
+  const [screen, setScreen] = useState<Screen>("intro")
+  const [answers, setAnswers] = useState<Answer>({})
+  const [copied, setCopied] = useState(false)
+  const [resumeAt, setResumeAt] = useState(0)
+
+  const [recordId] = useState(() => {
+    const t = Date.now().toString(36).toUpperCase().slice(-6)
+    return `ARI-${t}`
+  })
+
+  const today = new Date().toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  })
+
+  const answeredCount = Object.keys(answers).length
+
+  const results = useMemo(() => calcResults(answers), [answers])
+
+  const setAnswer = (key: string, value: AnswerValue) =>
+    setAnswers((prev) => ({ ...prev, [key]: value }))
+
+  const handleBack = () => {
+    if (typeof screen === "number") {
+      setScreen(screen === 0 ? "intro" : screen - 1)
+    }
+  }
+
+  const handleNext = () => {
+    if (typeof screen !== "number") return
+    setScreen(screen === DIMENSIONS.length - 1 ? "results" : screen + 1)
+  }
+
+  const handlePause = () => {
+    if (typeof screen !== "number") return
+    setResumeAt(isDimComplete(screen, answers) ? screen + 1 : screen)
+    setScreen("partial")
+  }
+
+  const copySummary = async () => {
+    const lines = [
+      `Agent Readiness Index — ${results.overall}/100`,
+      `Level ${results.level.n}: ${results.level.name}`,
+      ``,
+      ...results.dims.map((d) => `${d.label}: ${d.pct}/100`),
+      ``,
+      `Top priorities:`,
+      ...results.priorities.map((p, i) => `${i + 1}. ${p.rec}`),
+      ``,
+      `vaultkit.io/readiness`,
+    ]
+    try {
+      await navigator.clipboard.writeText(lines.join("\n"))
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // clipboard unavailable — fail silently
+    }
+  }
+
+  const reset = () => {
+    setAnswers({})
+    setScreen("intro")
+  }
+
+  return (
+    <div className={`${styles.root} ${fontClassNames}`}>
+      <div className={styles.shell}>
+        {screen === "intro" && <IntroScreen onStart={() => setScreen(0)} />}
+
+        {typeof screen === "number" && (
+          <DimensionScreen
+            dimIndex={screen}
+            answers={answers}
+            answeredCount={answeredCount}
+            totalQuestions={TOTAL_QUESTIONS}
+            onAnswer={setAnswer}
+            onBack={handleBack}
+            onNext={handleNext}
+            onPause={handlePause}
+          />
+        )}
+
+        {screen === "partial" && (
+          <PartialResults
+            results={results}
+            answers={answers}
+            resumeAt={resumeAt}
+            onContinue={(s) => setScreen(s)}
+          />
+        )}
+
+        {screen === "results" && (
+          <div>
+            <div className={styles.eyebrow}>Assessment complete</div>
+
+            <ResultsRecord
+              results={results}
+              recordId={recordId}
+              today={today}
+            />
+
+            {results.priorities.length > 0 && (
+              <div className={styles.prior}>
+                <h3 className={styles.priorHeading}>Close these gaps first</h3>
+                {results.priorities.map((p, i) => (
+                  <div className={styles.priorItem} key={i}>
+                    <div className={styles.priorNum}>0{i + 1}</div>
+                    <div>
+                      <div className={styles.priorText}>{p.rec}</div>
+                      <div className={styles.priorDim}>{p.dim}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {results.priorities.length === 0 && (
+              <p className={styles.lede} style={{ marginTop: 24 }}>
+                No gaps identified. Your organization already runs agents with
+                the controls most teams are still designing.
+              </p>
+            )}
+
+            <LeadCapture results={results} answers={answers} />
+
+            <div className={styles.foot}>
+              <button className={styles.btn} onClick={copySummary}>
+                {copied ? "Copied ✓" : "Copy summary"}
+              </button>
+              <button
+                className={`${styles.btn} ${styles.btnGhost}`}
+                onClick={reset}
+              >
+                Start over
+              </button>
+            </div>
+
+            <p className={styles.footnote}>
+              Organizations that reach Levels 3 and 4 share a pattern:
+              centralized policy, enforcement before query execution, field-level
+              protection, scoped time-boxed approvals, and an immutable audit
+              trail. The gap between where you are and where autonomous agents
+              become safe is a capabilities gap, not a culture gap.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}

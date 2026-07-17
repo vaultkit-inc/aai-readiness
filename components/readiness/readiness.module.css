@@ -1,0 +1,609 @@
+.root {
+  --paper: #F6F5F1;
+  --card: #FFFFFF;
+  --ink: #1C2421;
+  --ink-soft: #4A5450;
+  --ink-faint: #8B948F;
+  --line: #DDDCD4;
+  --line-strong: #1C2421;
+  --grant: #1F6E4A;
+  --grant-soft: #E4EFE8;
+  --deny: #B04A3E;
+  --pend: #B07C24;
+  /* next/font CSS variables are injected on the element where font.variable is applied */
+  --mono: var(--font-ibm-plex-mono, 'IBM Plex Mono'), ui-monospace, monospace;
+  --sans: var(--font-ibm-plex-sans, 'IBM Plex Sans'), system-ui, sans-serif;
+  --display: var(--font-archivo, 'Archivo'), system-ui, sans-serif;
+  background: var(--paper);
+  min-height: 100vh;
+  font-family: var(--sans);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+.shell {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 40px 20px 80px;
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.eyebrow::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+.title {
+  font-family: var(--display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-size: clamp(34px, 6vw, 52px);
+  line-height: 1.02;
+  margin: 18px 0 0;
+}
+
+.lede {
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--ink-soft);
+  margin: 20px 0 0;
+  max-width: 56ch;
+}
+
+.levels {
+  margin-top: 36px;
+  border-top: 2px solid var(--line-strong);
+}
+
+.levelRow {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+  align-items: baseline;
+}
+
+.levelNum {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-faint);
+  letter-spacing: 0.08em;
+}
+
+.levelName {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 17px;
+}
+
+.levelBlurb {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin-top: 4px;
+}
+
+/* ——— Buttons ——— */
+
+.btn {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: 1.5px solid var(--line-strong);
+  background: var(--ink);
+  color: var(--paper);
+  padding: 14px 26px;
+  border-radius: 3px;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 3px 3px 0 var(--line-strong);
+}
+.btn:focus-visible {
+  outline: 2px solid var(--grant);
+  outline-offset: 3px;
+}
+.btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btnGhost {
+  background: transparent;
+  color: var(--ink);
+}
+
+/* ——— Progress bar ——— */
+
+.progress {
+  display: flex;
+  gap: 6px;
+  margin: 0 0 28px;
+}
+
+.progressSegment {
+  flex: 1;
+  height: 3px;
+  background: var(--line);
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+}
+
+.progressDone::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--grant);
+}
+
+.progressCurrent::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+}
+
+/* ——— Dimension screen ——— */
+
+.dimHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.dimTitle {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 28px;
+  letter-spacing: -0.01em;
+}
+
+.dimSub {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+/* ——— Question cards ——— */
+
+.q {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 20px;
+  margin-top: 14px;
+}
+
+.qText {
+  font-weight: 600;
+  font-size: 15.5px;
+  line-height: 1.45;
+}
+
+.qDetail {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin-top: 6px;
+}
+
+.choices {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.choice {
+  flex: 1;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 10px 8px;
+  border: 1.5px solid var(--line);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: all 0.1s ease;
+  text-align: center;
+}
+.choice:hover {
+  border-color: var(--ink-faint);
+  color: var(--ink);
+}
+.choice:focus-visible {
+  outline: 2px solid var(--grant);
+  outline-offset: 2px;
+}
+
+.choiceSel0 {
+  background: #F7EAE8;
+  border-color: var(--deny);
+  color: var(--deny);
+  font-weight: 600;
+}
+
+.choiceSel1 {
+  background: #F7F0E2;
+  border-color: var(--pend);
+  color: var(--pend);
+  font-weight: 600;
+}
+
+.choiceSel2 {
+  background: var(--grant-soft);
+  border-color: var(--grant);
+  color: var(--grant);
+  font-weight: 600;
+}
+
+/* ——— Navigation ——— */
+
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 28px;
+  gap: 12px;
+}
+
+.count {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+
+/* ——— Results record ——— */
+
+.record {
+  background: var(--card);
+  border: 1.5px solid var(--line-strong);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.recordHead {
+  padding: 22px 26px;
+  border-bottom: 1.5px solid var(--line-strong);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.recordMeta {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-faint);
+  letter-spacing: 0.06em;
+  line-height: 1.9;
+  text-align: right;
+}
+
+.recordTitle {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.scoreRow {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  padding: 30px 26px;
+  flex-wrap: wrap;
+}
+
+.scoreNum {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 76px;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+}
+
+.scoreDenom {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink-faint);
+}
+
+/* ——— Stamp ——— */
+
+.stamp {
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--grant);
+  border: 2px solid var(--grant);
+  padding: 10px 16px;
+  border-radius: 3px;
+  transform: rotate(-3deg);
+  box-shadow: inset 0 0 0 1.5px var(--card), inset 0 0 0 3px var(--grant);
+  animation: stamp 0.35s cubic-bezier(0.2, 1.6, 0.4, 1) both;
+}
+
+@keyframes stamp {
+  from {
+    transform: rotate(-3deg) scale(1.7);
+    opacity: 0;
+  }
+  to {
+    transform: rotate(-3deg) scale(1);
+    opacity: 1;
+  }
+}
+
+/* ——— Level description in results ——— */
+
+.levelDesc {
+  padding: 0 26px 24px;
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--ink-soft);
+  max-width: 60ch;
+}
+
+/* ——— Dimension bars ——— */
+
+.bars {
+  border-top: 1px solid var(--line);
+  padding: 20px 26px 26px;
+}
+
+.barRow {
+  display: grid;
+  grid-template-columns: 130px 1fr 44px;
+  gap: 14px;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.barLabel {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+.barTrack {
+  height: 8px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  background: var(--ink);
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
+
+.barPct {
+  font-family: var(--mono);
+  font-size: 12px;
+  text-align: right;
+}
+
+/* ——— Priorities ——— */
+
+.prior {
+  margin-top: 28px;
+}
+
+.priorHeading {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 18px;
+  margin: 0 0 4px;
+}
+
+.priorItem {
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+  align-items: baseline;
+}
+
+.priorNum {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--deny);
+  font-weight: 600;
+}
+
+.priorText {
+  font-size: 14.5px;
+  line-height: 1.55;
+}
+
+.priorDim {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-faint);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+
+/* ——— Pause link ——— */
+
+.pauseLink {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-faint);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.pauseLink:hover {
+  color: var(--ink);
+}
+.pauseLink:focus-visible {
+  outline: 2px solid var(--grant);
+  outline-offset: 2px;
+}
+
+/* ——— Warning box ——— */
+
+.warn {
+  margin-top: 18px;
+  padding: 14px 18px;
+  border: 1.5px solid var(--pend);
+  border-radius: 4px;
+  background: #FBF4E3;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #6B4E13;
+}
+
+.warnStrong {
+  color: #4F3A0C;
+  font-weight: 600;
+}
+
+/* ——— Lead capture ——— */
+
+.lead {
+  margin-top: 28px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 22px;
+}
+
+.leadTitle {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 17px;
+}
+
+.leadSub {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin: 6px 0 0;
+  max-width: 58ch;
+}
+
+.leadFields {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.leadError {
+  margin-top: 10px;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--deny);
+}
+
+.leadRetry {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.input {
+  flex: 1;
+  min-width: 180px;
+  font-family: var(--sans);
+  font-size: 14px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--ink);
+}
+.input:focus-visible {
+  outline: 2px solid var(--grant);
+  outline-offset: 1px;
+  border-color: var(--grant);
+}
+.input::placeholder {
+  color: var(--ink-faint);
+}
+
+/* ——— Footer ——— */
+
+.foot {
+  margin-top: 30px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.footnote {
+  margin-top: 34px;
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--ink-faint);
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+  max-width: 62ch;
+}
+
+/* ——— Reduced motion ——— */
+
+@media (prefers-reduced-motion: reduce) {
+  .stamp {
+    animation: none;
+  }
+  .btn,
+  .btn:hover {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* ——— Mobile ——— */
+
+@media (max-width: 560px) {
+  .barRow {
+    grid-template-columns: 96px 1fr 40px;
+  }
+  .scoreNum {
+    font-size: 58px;
+  }
+}
