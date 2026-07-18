@@ -19,11 +19,7 @@ import LeadCapture from "./LeadCapture"
 
 type Screen = "intro" | number | "partial" | "results"
 
-interface Props {
-  fontClassNames: string
-}
-
-export default function AssessmentClient({ fontClassNames }: Props) {
+export default function AssessmentClient() {
   const [screen, setScreen] = useState<Screen>("intro")
   const [answers, setAnswers] = useState<Answer>({})
   const [copied, setCopied] = useState(false)
@@ -104,7 +100,7 @@ export default function AssessmentClient({ fontClassNames }: Props) {
   }
 
   return (
-    <div className={`${styles.root} ${fontClassNames}`}>
+    <div className={styles.root}>
       <div className={styles.shell}>
         {screen === "intro" && <IntroScreen onStart={() => setScreen(0)} />}
 
