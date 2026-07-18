@@ -9,10 +9,9 @@ import LeadCapture from "./LeadCapture"
 
 interface Props {
   encoded: string
-  fontClassNames: string
 }
 
-export default function SharedResultClient({ encoded, fontClassNames }: Props) {
+export default function SharedResultClient({ encoded }: Props) {
   const answers: Answer = useMemo(() => decodeAnswers(encoded), [encoded])
   const isValid = Object.keys(answers).length === 20
   const results = useMemo(
@@ -21,7 +20,7 @@ export default function SharedResultClient({ encoded, fontClassNames }: Props) {
   )
 
   return (
-    <div className={`${styles.root} ${fontClassNames}`}>
+    <div className={styles.root}>
       <div className={styles.shell}>
         {!isValid || !results ? (
           <div className={styles.fallback}>
