@@ -570,6 +570,7 @@
 .foot {
   margin-top: 30px;
   display: flex;
+  align-items: flex-start;
   gap: 10px;
   flex-wrap: wrap;
 }
@@ -595,6 +596,10 @@
     transition: none;
     transform: none;
   }
+  .expandChevron,
+  .expandChevronOpen {
+    transition: none;
+  }
 }
 
 /* ——— Mobile ——— */
@@ -606,4 +611,185 @@
   .scoreNum {
     font-size: 58px;
   }
+}
+
+/* ——— Priority expandable ——— */
+
+.priorCapName {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+.expandToggle {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+}
+.expandToggle:focus-visible {
+  outline: 2px solid var(--grant);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.expandChevron {
+  font-family: var(--mono);
+  font-size: 20px;
+  color: var(--ink);
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+  line-height: 1;
+  user-select: none;
+  /* default: › rotated 90deg = ↓ (collapsed state) */
+  transform: rotate(90deg);
+}
+
+.expandChevronOpen {
+  /* 90deg → 270deg = 180deg clockwise rotation = ↑ (expanded state) */
+  transform: rotate(270deg);
+}
+
+.expandBody {
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--ink-soft);
+  margin-top: 6px;
+}
+
+.breakdownNote {
+  margin-top: 18px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-faint);
+  letter-spacing: 0.02em;
+}
+
+/* ——— Verify-it nudges ——— */
+
+.verifySection {
+  margin-top: 28px;
+}
+
+.verifyHeading {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 16px;
+  margin: 0 0 2px;
+}
+
+.verifyItem {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.verifyLabel {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-faint);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.verifyChallenge {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  line-height: 1.6;
+  margin-top: 5px;
+}
+
+/* ——— Getting to Level N+1 ——— */
+
+.levelGateSection {
+  margin-top: 28px;
+}
+
+.levelGateHeading {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 18px;
+  margin: 0 0 4px;
+}
+
+.levelGateItem {
+  display: grid;
+  grid-template-columns: 14px 1fr;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  align-items: baseline;
+}
+
+.levelGateDot {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--pend);
+}
+
+.levelGateName {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+.levelGateAllClear {
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+/* ——— Copy link ——— */
+
+.copyLinkWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.copyLinkNote {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-faint);
+}
+
+/* ——— Shared result page ——— */
+
+.sharedBadge {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.sharedBadge::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+.fallback {
+  margin-top: 80px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+}
+
+.fallbackLink {
+  color: var(--grant);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
