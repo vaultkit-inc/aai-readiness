@@ -14,5 +14,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.9,
     },
+    {
+      url: "https://vaultkit.io/readiness/r",
+      lastModified: new Date(),
+      changeFrequency: "never",
+      priority: 0.1,
+    },
   ]
 }

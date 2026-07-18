@@ -36,6 +36,7 @@ export interface DimensionResult extends Dimension {
 }
 
 export interface Priority {
+  key: string   // e.g. "gov-0" — indexes into CONTENT in lib/readiness/content.ts
   dim: string
   rec: string
   v: AnswerValue
@@ -253,7 +254,7 @@ export function calcResults(answers: Answer): AssessmentResult {
   DIMENSIONS.forEach((dim) => {
     dim.questions.forEach((q, i) => {
       const v = (answers[`${dim.id}-${i}`] ?? 0) as AnswerValue
-      if (v < 2) gaps.push({ dim: dim.label, rec: q.rec, v })
+      if (v < 2) gaps.push({ key: `${dim.id}-${i}`, dim: dim.label, rec: q.rec, v })
     })
   })
   gaps.sort((a, b) => a.v - b.v)

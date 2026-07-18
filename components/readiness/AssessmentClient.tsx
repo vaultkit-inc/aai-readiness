@@ -9,6 +9,7 @@ import {
   type AnswerValue,
   TOTAL_QUESTIONS,
 } from "@/lib/readiness/model"
+import { encodeAnswers } from "@/lib/readiness/share"
 import styles from "./readiness.module.css"
 import IntroScreen from "./IntroScreen"
 import DimensionScreen from "./DimensionScreen"
@@ -26,6 +27,7 @@ export default function AssessmentClient({ fontClassNames }: Props) {
   const [screen, setScreen] = useState<Screen>("intro")
   const [answers, setAnswers] = useState<Answer>({})
   const [copied, setCopied] = useState(false)
+  const [copiedLink, setCopiedLink] = useState(false)
   const [resumeAt, setResumeAt] = useState(0)
 
   const [recordId] = useState(() => {
@@ -40,7 +42,6 @@ export default function AssessmentClient({ fontClassNames }: Props) {
   })
 
   const answeredCount = Object.keys(answers).length
-
   const results = useMemo(() => calcResults(answers), [answers])
 
   const setAnswer = (key: string, value: AnswerValue) =>
@@ -63,6 +64,19 @@ export default function AssessmentClient({ fontClassNames }: Props) {
     setScreen("partial")
   }
 
+  const shareUrl = () =>
+    `${window.location.origin}/readiness/r?a=${encodeAnswers(answers)}`
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl())
+      setCopiedLink(true)
+      setTimeout(() => setCopiedLink(false), 2000)
+    } catch {
+      // clipboard unavailable — fail silently
+    }
+  }
+
   const copySummary = async () => {
     const lines = [
       `Agent Readiness Index — ${results.overall}/100`,
@@ -73,7 +87,7 @@ export default function AssessmentClient({ fontClassNames }: Props) {
       `Top priorities:`,
       ...results.priorities.map((p, i) => `${i + 1}. ${p.rec}`),
       ``,
-      `vaultkit.io/readiness`,
+      shareUrl(),
     ]
     try {
       await navigator.clipboard.writeText(lines.join("\n"))
@@ -122,35 +136,22 @@ export default function AssessmentClient({ fontClassNames }: Props) {
 
             <ResultsRecord
               results={results}
+              answers={answers}
               recordId={recordId}
               today={today}
             />
 
-            {results.priorities.length > 0 && (
-              <div className={styles.prior}>
-                <h3 className={styles.priorHeading}>Close these gaps first</h3>
-                {results.priorities.map((p, i) => (
-                  <div className={styles.priorItem} key={i}>
-                    <div className={styles.priorNum}>0{i + 1}</div>
-                    <div>
-                      <div className={styles.priorText}>{p.rec}</div>
-                      <div className={styles.priorDim}>{p.dim}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {results.priorities.length === 0 && (
-              <p className={styles.lede} style={{ marginTop: 24 }}>
-                No gaps identified. Your organization already runs agents with
-                the controls most teams are still designing.
-              </p>
-            )}
-
             <LeadCapture results={results} answers={answers} />
 
             <div className={styles.foot}>
+              <div className={styles.copyLinkWrap}>
+                <button className={styles.btn} onClick={copyLink}>
+                  {copiedLink ? "Link copied ✓" : "Copy link to my results"}
+                </button>
+                <span className={styles.copyLinkNote}>
+                  This link contains your answers.
+                </span>
+              </div>
               <button className={styles.btn} onClick={copySummary}>
                 {copied ? "Copied ✓" : "Copy summary"}
               </button>
