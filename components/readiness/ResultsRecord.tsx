@@ -71,10 +71,7 @@ export default function ResultsRecord({ results, answers, recordId, today }: Pro
         </div>
 
         <div className={styles.scoreRow}>
-          <div>
-            <span className={styles.scoreNum}>{results.overall}</span>
-            <span className={styles.scoreDenom}> / 100</span>
-          </div>
+          <span className={styles.scoreNum}>{results.letter}</span>
           <div className={styles.stamp}>
             Level {results.level.n} · {results.level.name}
           </div>

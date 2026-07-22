@@ -15,9 +15,10 @@ import IntroScreen from "./IntroScreen"
 import DimensionScreen from "./DimensionScreen"
 import PartialResults from "./PartialResults"
 import ResultsRecord from "./ResultsRecord"
-import LeadCapture from "./LeadCapture"
+import LeadFallback from "./LeadFallback"
 
-type Screen = "intro" | number | "partial" | "results"
+type Screen = "intro" | number | "partial" | "lead-gate" | "results"
+type LeadStatus = "idle" | "sent" | "skipped"
 
 export default function AssessmentClient() {
   const [screen, setScreen] = useState<Screen>("intro")
@@ -25,6 +26,13 @@ export default function AssessmentClient() {
   const [copied, setCopied] = useState(false)
   const [copiedLink, setCopiedLink] = useState(false)
   const [resumeAt, setResumeAt] = useState(0)
+
+  // Lead gate state
+  const [leadStatus, setLeadStatus] = useState<LeadStatus>("idle")
+  const [gateEmail, setGateEmail] = useState("")
+  const [gateCompany, setGateCompany] = useState("")
+  const [gateSending, setGateSending] = useState(false)
+  const [gateError, setGateError] = useState(false)
 
   const [recordId] = useState(() => {
     const t = Date.now().toString(36).toUpperCase().slice(-6)
@@ -51,13 +59,45 @@ export default function AssessmentClient() {
 
   const handleNext = () => {
     if (typeof screen !== "number") return
-    setScreen(screen === DIMENSIONS.length - 1 ? "results" : screen + 1)
+    setScreen(screen === DIMENSIONS.length - 1 ? "lead-gate" : screen + 1)
   }
 
   const handlePause = () => {
     if (typeof screen !== "number") return
     setResumeAt(isDimComplete(screen, answers) ? screen + 1 : screen)
     setScreen("partial")
+  }
+
+  const submitGate = async () => {
+    const cleanEmail = gateEmail.trim().toLowerCase()
+    if (!cleanEmail.includes("@") || !cleanEmail.includes(".")) return
+    setGateSending(true)
+    setGateError(false)
+    try {
+      const res = await fetch("/api/readiness/lead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: cleanEmail,
+          company: gateCompany.trim() || null,
+          score: results.overall,
+          level: results.level.n,
+          dims: Object.fromEntries(results.dims.map((d) => [d.id, d.pct])),
+          answers,
+        }),
+      })
+      if (!res.ok) throw new Error("server error")
+      setLeadStatus("sent")
+      setScreen("results")
+    } catch {
+      setGateError(true)
+      setGateSending(false)
+    }
+  }
+
+  const skipGate = () => {
+    setLeadStatus("skipped")
+    setScreen("results")
   }
 
   const shareUrl = () =>
@@ -75,10 +115,9 @@ export default function AssessmentClient() {
 
   const copySummary = async () => {
     const lines = [
-      `Agent Readiness Index — ${results.overall}/100`,
-      `Level ${results.level.n}: ${results.level.name}`,
+      `Agent Readiness Index — Grade: ${results.letter} (Level ${results.level.n}: ${results.level.name})`,
       ``,
-      ...results.dims.map((d) => `${d.label}: ${d.pct}/100`),
+      ...results.dims.map((d) => `${d.label}: ${d.pct} / 100`),
       ``,
       `Top priorities:`,
       ...results.priorities.map((p, i) => `${i + 1}. ${p.rec}`),
@@ -97,7 +136,15 @@ export default function AssessmentClient() {
   const reset = () => {
     setAnswers({})
     setScreen("intro")
+    setLeadStatus("idle")
+    setGateEmail("")
+    setGateCompany("")
+    setGateSending(false)
+    setGateError(false)
   }
+
+  const gateIsValid = gateEmail.trim().toLowerCase().includes("@") &&
+    gateEmail.trim().toLowerCase().includes(".")
 
   return (
     <div className={styles.root}>
@@ -126,6 +173,71 @@ export default function AssessmentClient() {
           />
         )}
 
+        {screen === "lead-gate" && (
+          <div>
+            <div className={styles.eyebrow}>Assessment complete</div>
+            <h2 className={styles.title} style={{ fontSize: "clamp(28px, 5vw, 42px)" }}>
+              Your assessment is ready
+            </h2>
+            <p className={styles.lede}>
+              Enter your email to see your grade, maturity level, and the three
+              gaps to close first. We'll also send you the full
+              dimension-by-dimension breakdown.
+            </p>
+            <form
+              className={styles.leadFields}
+              style={{ marginTop: 28 }}
+              onSubmit={(e) => {
+                e.preventDefault()
+                submitGate()
+              }}
+            >
+              <input
+                className={styles.input}
+                type="email"
+                name="email"
+                autoComplete="email"
+                placeholder="Work email"
+                value={gateEmail}
+                onChange={(e) => setGateEmail(e.target.value)}
+                aria-label="Work email"
+              />
+              <input
+                className={styles.input}
+                type="text"
+                name="organization"
+                autoComplete="organization"
+                placeholder="Company (optional)"
+                value={gateCompany}
+                onChange={(e) => setGateCompany(e.target.value)}
+                aria-label="Company, optional"
+              />
+              <button
+                type="submit"
+                className={styles.btn}
+                disabled={!gateIsValid || gateSending}
+              >
+                {gateSending ? "Sending…" : "See my results →"}
+              </button>
+            </form>
+            {gateError && (
+              <p className={styles.leadError} style={{ marginTop: 10 }}>
+                Something went wrong.{" "}
+                <button
+                  type="button"
+                  className={styles.leadRetry}
+                  onClick={submitGate}
+                >
+                  Try again
+                </button>
+              </p>
+            )}
+            <button className={styles.skipLink} onClick={skipGate}>
+              Skip and see results
+            </button>
+          </div>
+        )}
+
         {screen === "results" && (
           <div>
             <div className={styles.eyebrow}>Assessment complete</div>
@@ -137,7 +249,17 @@ export default function AssessmentClient() {
               today={today}
             />
 
-            <LeadCapture results={results} answers={answers} />
+            {leadStatus === "sent" ? (
+              <div className={styles.leadConfirm}>
+                <div className={styles.leadConfirmTitle}>✓ Got it</div>
+                <p className={styles.leadConfirmSub}>
+                  Your breakdown will land at {gateEmail.trim().toLowerCase()}{" "}
+                  within a day, written by a person, not a template.
+                </p>
+              </div>
+            ) : (
+              <LeadFallback results={results} answers={answers} />
+            )}
 
             <div className={styles.foot}>
               <div className={styles.copyLinkWrap}>

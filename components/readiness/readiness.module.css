@@ -761,6 +761,82 @@
   color: var(--ink-faint);
 }
 
+/* ——— Skip link (lead gate) ——— */
+
+.skipLink {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-faint);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  margin-top: 16px;
+  display: block;
+}
+.skipLink:hover {
+  color: var(--ink);
+}
+.skipLink:focus-visible {
+  outline: 2px solid var(--grant);
+  outline-offset: 2px;
+}
+
+/* ——— Lead confirmation (post-gate submit) ——— */
+
+.leadConfirm {
+  margin-top: 28px;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--grant-soft);
+}
+
+.leadConfirmTitle {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--grant);
+}
+
+.leadConfirmSub {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin: 4px 0 0;
+  max-width: 58ch;
+}
+
+/* ——— Lead fallback (skipped gate) ——— */
+
+.leadFallback {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.leadFallbackLabel {
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin: 0 0 8px;
+}
+
+.leadFallbackForm {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.leadFallbackSent {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--grant);
+  margin: 0;
+}
+
 /* ——— Shared result page ——— */
 
 .sharedBadge {

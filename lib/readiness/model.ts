@@ -45,6 +45,7 @@ export interface Priority {
 export interface AssessmentResult {
   dims: DimensionResult[]
   overall: number
+  letter: "A" | "B" | "C" | "D" | "F"
   level: Level
   priorities: Priority[]
 }
@@ -228,6 +229,14 @@ export const CHOICES: Choice[] = [
 
 // ————— Scoring functions —————
 
+export function letterFor(pct: number): "A" | "B" | "C" | "D" | "F" {
+  if (pct >= 90) return "A"
+  if (pct >= 80) return "B"
+  if (pct >= 70) return "C"
+  if (pct >= 60) return "D"
+  return "F"
+}
+
 export function levelFor(pct: number): Level {
   return LEVELS.find((l) => pct >= l.range[0] && pct <= l.range[1]) ?? LEVELS[0]
 }
@@ -259,7 +268,7 @@ export function calcResults(answers: Answer): AssessmentResult {
   })
   gaps.sort((a, b) => a.v - b.v)
 
-  return { dims, overall, level, priorities: gaps.slice(0, 3) }
+  return { dims, overall, letter: letterFor(overall), level, priorities: gaps.slice(0, 3) }
 }
 
 export const TOTAL_QUESTIONS = DIMENSIONS.reduce((a, d) => a + d.questions.length, 0)
